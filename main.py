@@ -10,5 +10,5 @@ def main(bot, token):
                 try:
                     await bot.load_extension("cogs."+name.replace(".py", ""))
                 except Exception as e:
-                    print(traceback.format_exception(e))
+                    print("".join(traceback.format_exception(e)))
     bot.run(token=token)
