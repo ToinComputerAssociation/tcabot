@@ -7,16 +7,20 @@ class Examination(commands.Cog):
         self.bot = bot
 
     async def load_cog(self):
-        #self.pool = await aiomysql.create_pool(
-        #    host=os.environ["MYSQL_HOST"], port=int(os.environ["MYSQL_PORT"]),
-        #    user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
-        #    db=os.environ["MYSQL_DBNAME"], loop=self.loop, autocommit=True
-        #)
+        self.pool = await aiomysql.create_pool(
+            host=os.environ["MYSQL_HOST"], port=int(os.environ["MYSQL_PORT"]),
+            user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
+            db=os.environ["MYSQL_DBNAME"], loop=self.loop, autocommit=True
+        )
         pass
 
     @commands.command(aliases=["re"])
     async def register(self, ctx: commands.Context):
         await ctx.send("test!")
+
+    @commands.command()
+    async def view(self, ctx: commands.Context):
+        await ctx.send("test2!")
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Examination(bot))
