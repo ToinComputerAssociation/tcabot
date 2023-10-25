@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 import aiomysql
+import os
 
 class Examination(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
