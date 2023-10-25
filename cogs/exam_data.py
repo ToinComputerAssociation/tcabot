@@ -6,7 +6,7 @@ class Examination(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    async def load_cog(self):
+    async def cog_load(self):
         self.pool = await aiomysql.create_pool(
             host=os.environ["MYSQL_HOST"], port=int(os.environ["MYSQL_PORT"]),
             user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
