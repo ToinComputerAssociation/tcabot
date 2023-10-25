@@ -11,7 +11,7 @@ class Examination(commands.Cog):
         self.pool = await aiomysql.create_pool(
             host=os.environ["MYSQL_HOST"], port=int(os.environ["MYSQL_PORT"]),
             user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
-            db=os.environ["MYSQL_DBNAME"], loop=self.loop, autocommit=True
+            db=os.environ["MYSQL_DBNAME"], loop=self.bot.loop, autocommit=True
         )
         pass
 
