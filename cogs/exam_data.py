@@ -15,6 +15,18 @@ class Examination(commands.Cog):
         )
         pass
 
+    async def execute_sql(
+        self, sql: str, _injects: tuple | None = None, _return_type = ""
+    ) -> tuple:
+        "SQL文を実行します。"
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(sql, _injects)
+                if _return_type == "fetchone":
+                    return await cursor.fetchone()
+                else:
+                    return await cursor.fetchone()
+
     @commands.command(aliases=["re"])
     async def register(self, ctx: commands.Context):
         await ctx.send("test!")
