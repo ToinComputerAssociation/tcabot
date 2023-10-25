@@ -25,7 +25,7 @@ class Examination(commands.Cog):
                 if _return_type == "fetchone":
                     return await cursor.fetchone()
                 else:
-                    return await cursor.fetchone()
+                    return await cursor.fetchall()
 
     @commands.command(aliases=["re"])
     async def register(self, ctx: commands.Context):
