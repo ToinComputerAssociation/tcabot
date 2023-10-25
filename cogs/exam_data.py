@@ -3,6 +3,15 @@ import discord
 import aiomysql
 import os
 
+
+class Sel(discord.ui.Select):
+    def __init__(self):
+        super().__init__(options=[discord.SelectOption(label="test", value="test")])
+
+    async def callback(self, interaction):
+        await interaction.response.send_message(str(self.values))
+
+
 class Examination(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -27,13 +36,16 @@ class Examination(commands.Cog):
                 else:
                     return await cursor.fetchall()
 
-    @commands.command(aliases=["re"])
+    @commands.hybrid_command(aliases=["re"])
     async def register(self, ctx: commands.Context):
-        await ctx.send("test!")
+        view = discord.ui.View()
+        view.add_item(Sel())
+        await ctx.send("test!", view=view)
 
-    @commands.command()
+    @commands.hybrid_command()
     async def view(self, ctx: commands.Context):
         await ctx.send("test2!")
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Examination(bot))
