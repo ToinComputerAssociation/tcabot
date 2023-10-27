@@ -12,7 +12,8 @@ class Debug(commands.Cog):
             r = await self.bot.cogs["Examination"].execute_sql(arg)
         except Exception as exc:
             await ctx.send(
-                f"An error has occurred in command execution.\n```py\n{fmt_exc(exc)}\n```"
+                "An error has occurred in command execution.",
+                embed=discord.Embed(description=f"```py\n{"".join(fmt_exc(exc))}\n```")
             )
         await ctx.send(f"Command was executed successfully.\n```\n{r or '(Nothing Returned)'}\n```")
 
