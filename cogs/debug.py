@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from traceback import format_exception as fmt_exc
 
