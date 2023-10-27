@@ -5,29 +5,33 @@ import os
 
 
 class TestType(discord.ui.Select):
-    def __init__(self):
+    def __init__(self, default=None):
         super().__init__(
             placeholder="テスト種別を選択...",
             options=[
-                discord.SelectOption(label="前期中間", value="1"),
-                discord.SelectOption(label="前期期末", value="2"),
-                discord.SelectOption(label="後期中間", value="3"),
-                discord.SelectOption(label="後期期末", value="4")
+                discord.SelectOption(label="前期中間", value="1", default=default==1),
+                discord.SelectOption(label="前期期末", value="2", default=default==2),
+                discord.SelectOption(label="後期中間", value="3", default=default==3),
+                discord.SelectOption(label="後期期末", value="4", default=default==4)
             ]
         )
 
-    async def callback(self, interacrion):
-        await interaction.response.pong()
+    async def callback(self, interaction):
+        selected = int(self.values[0])
+        # self.view.add_item()
+        await interaction.response.edit_message(
+            content=f"selected {selected}", view=self.view
+        )
 
 
 class Grade(discord.ui.Select):
-    def __init__(self):
+    def __init__(self, default=None):
         super().__init__(
             placeholder="学年を選択...",
             options=[
-                discord.SelectOption(label="1年生", value="1"),
-                discord.SelectOption(label="2年生", value="2"),
-                discord.SelectOption(label="3年生", value="3")
+                discord.SelectOption(label="1年生", value="1", default=default==1),
+                discord.SelectOption(label="2年生", value="2", default=default==2),
+                discord.SelectOption(label="3年生", value="3", default=default==3)
             ]
         )
 
