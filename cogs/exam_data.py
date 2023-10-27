@@ -4,15 +4,39 @@ import aiomysql
 import os
 
 
+class TestType(discord.ui.Select):
+    def __init__(self):
+        super().__init__(
+            placeholder="テスト種別を選択...",
+            options=[
+                discord.SelectOption(label="前期中間", value="1"),
+                discord.SelectOption(label="前期期末", value="2"),
+                discord.SelectOption(label="後期中間", value="3"),
+                discord.SelectOption(label="後期期末", value="4")
+            ]
+        )
+
+    async def callback(self, interacrion):
+        await interaction.response.pong()
+
+
 class Grade(discord.ui.Select):
-    def __init__(self, ite: dict):
+    def __init__(self):
         super().__init__(
             placeholder="学年を選択...",
-            options=[discord.SelectOption(label=v, value=str(k)) for k, v in ite.items()]
+            options=[
+                discord.SelectOption(label="1年生", value="1"),
+                discord.SelectOption(label="2年生", value="2"),
+                discord.SelectOption(label="3年生", value="3")
+            ]
         )
 
     async def callback(self, interaction):
-        await interaction.response.send_message(str(self.values))
+        selected = int(self.values[0])
+        # self.view.add_item()
+        await interaction.response.edit_message(
+            content=f"selected {selected}", view=self.view
+        )
 
 
 class Examination(commands.Cog):
@@ -25,7 +49,6 @@ class Examination(commands.Cog):
             user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
             db=os.environ["MYSQL_DBNAME"], loop=self.bot.loop, autocommit=True
         )
-        pass
 
     async def execute_sql(
         self, sql: str, _injects: tuple | None = None, _return_type = ""
@@ -42,7 +65,8 @@ class Examination(commands.Cog):
     @commands.hybrid_command(aliases=["re"])
     async def register(self, ctx: commands.Context):
         view = discord.ui.View()
-        view.add_item(Grade({1: "1年生", 2: "2年生", 3: "3年生"}))
+        view.add_item(Grade())
+        view.add_item(TestType())
         await ctx.send("test!", view=view)
 
     @commands.hybrid_command()
