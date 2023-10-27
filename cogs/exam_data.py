@@ -4,9 +4,12 @@ import aiomysql
 import os
 
 
-class Sel(discord.ui.Select):
-    def __init__(self):
-        super().__init__(options=[discord.SelectOption(label="test", value="test")])
+class Grade(discord.ui.Select):
+    def __init__(self, ite: dict):
+        super().__init__(
+            placeholder="学年を選択...",
+            options=[discord.SelectOption(label=v, value=str(k)) for k, v in ite.items()]
+        )
 
     async def callback(self, interaction):
         await interaction.response.send_message(str(self.values))
@@ -39,7 +42,7 @@ class Examination(commands.Cog):
     @commands.hybrid_command(aliases=["re"])
     async def register(self, ctx: commands.Context):
         view = discord.ui.View()
-        view.add_item(Sel())
+        view.add_item(Grade({1: "1年生", 2: "2年生", 3: "3年生"}))
         await ctx.send("test!", view=view)
 
     @commands.hybrid_command()
