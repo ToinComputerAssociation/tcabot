@@ -14,7 +14,7 @@ class Debug(commands.Cog):
         except Exception as exc:
             await ctx.send(
                 "An error has occurred in command execution.",
-                embed=discord.Embed(description=f"```py\n{"".join(fmt_exc(exc))}\n```")
+                embed=discord.Embed(description=f"```py\n{''.join(fmt_exc(exc))}\n```")
             )
         await ctx.send(f"Command was executed successfully.\n```\n{r or '(Nothing Returned)'}\n```")
 
