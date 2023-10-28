@@ -21,6 +21,7 @@ async def on_ready():
                 await bot.load_extension("cogs."+name.replace(".py", ""))
             except Exception as e:
                 print("".join(traceback.format_exception(e)))
+    await bot.tree.sync()
     print("Hello, TCABot!")
 
 
