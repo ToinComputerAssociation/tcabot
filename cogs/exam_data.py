@@ -6,11 +6,12 @@ import os
 
 
 class DataCreateView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, bot):
         super().__init__()
         self.add_item(Grade())
         self.add_item(TestType())
         self.add_item(SubmitButton(1))
+        self.bot = bot
 
     def get_item(self, cls):
         for i in self.children:
@@ -55,22 +56,28 @@ class Grade(discord.ui.Select):
         selected = int(self.values[0])
         for i in range(3):
             self.options[i].default = (i == selected-1)
-        self.view.get_item(SubmitButton).disabled = False
+        sub = Subject(selected-1)
+        await sub.async_setup()
+        self.view.add_item(sub)
         await interaction.response.edit_message(view=self.view)
 
 
-class SubmitButton(discord.ui.Button):
-    def __init__(self, mode: int):
-        super().__init__(label="次へ", disabled=True)
-        self.mode = mode
+class Subject(discord.ui.Select):
+    def __init__(self, grade: int):
+        super().__init__(placeholder="教科を選択...")
+        self.grade = grade
+
+    async def async_setup(self):
+        sub = await self.view.bot.cogs["Examination"].execute_sql("SELECT * FROM subject;")
+        for i in sub:
+            if i[2] & self.grade:
+                self.add_option(label=i[1], value=str(i[0]))
 
     async def callback(self, interaction):
-        if self.mode == 1:
-            # self.view.add_item()
-            grade = self.view.get_item(Grade).values[0]
-            await interaction.response.edit_message(content="教科を選択してください。")
-        else:
-            ...
+        selected = int(self.values[0])
+        for i in range(3):
+            self.options[i].default = (int(self.options[i].value) == selected)
+        await interactrion.response.edit_message(view=self.view)
 
 
 class Examination(commands.Cog):
@@ -98,7 +105,7 @@ class Examination(commands.Cog):
 
     @commands.hybrid_command(aliases=["re"])
     async def register(self, ctx: commands.Context):
-        view = DataCreateView()
+        view = DataCreateView(self.bot)
         await ctx.send("学年とテストの種類を選択してください。", view=view)
 
     @commands.hybrid_command()
