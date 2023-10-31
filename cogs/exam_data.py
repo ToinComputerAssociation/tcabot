@@ -10,7 +10,8 @@ class DataCreateView(discord.ui.View):
         super().__init__()
         self.add_item(Grade())
         self.add_item(TestType())
-        self.add_item(SubmitButton(1))
+        self.add_item(Year())
+        self.add_item(SubmitButton())
         self.bot = bot
 
     def get_item(self, cls):
@@ -56,9 +57,13 @@ class Grade(discord.ui.Select):
         selected = int(self.values[0])
         for i in range(3):
             self.options[i].default = (i == selected-1)
+        try:
+            self.view.remove_item(self.view.get_item(Subject))
+        except KeyError:
+            pass
         sub = Subject(selected-1)
-        await sub.async_setup()
         self.view.add_item(sub)
+        await sub.async_setup()
         await interaction.response.edit_message(view=self.view)
 
 
@@ -70,14 +75,61 @@ class Subject(discord.ui.Select):
     async def async_setup(self):
         sub = await self.view.bot.cogs["Examination"].execute_sql("SELECT * FROM subject;")
         for i in sub:
-            if i[2] & self.grade:
+            if i[2] & (1 << self.grade):
                 self.add_option(label=i[1], value=str(i[0]))
 
-    async def callback(self, interaction):
+    async def callback(self, interaction: discord.Interaction):
         selected = int(self.values[0])
-        for i in range(3):
+        for i in range(len(self.options)):
             self.options[i].default = (int(self.options[i].value) == selected)
-        await interactrion.response.edit_message(view=self.view)
+        await interaction.response.edit_message(view=self.view)
+
+
+class Year(discord.ui.Select):
+    def __init__(self):
+        super().__init__(
+            placeholder="年を選択...",
+            options=[
+                discord.SelectOption(label="2023年", value="2023"),
+                discord.SelectOption(label="2022年", value="2022"),
+                discord.SelectOption(label="2021年", value="2021"),
+                discord.SelectOption(label="2020年", value="2020"),
+                discord.SelectOption(label="2019年", value="2019"),
+                discord.SelectOption(label="2018年", value="2018"),
+                discord.SelectOption(label="2017年", value="2017"),
+                discord.SelectOption(label="2016年", value="2016"),
+                discord.SelectOption(label="2015年", value="2015")
+            ]
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        selected = int(self.values[0])
+        for i in range(len(self.options)):
+            self.options[i].default = (int(self.options[i].value) == selected)
+        await interaction.response.edit_message(view=self.view)
+
+
+class SubmitButton(discord.ui.Button):
+    view: DataCreateView
+
+    def __init__(self):
+        super().__init__(label="決定")
+
+    async def callback(self, interaction):
+        grade = self.view.get_item(Grade).values
+        if not grade:
+            return await interaction.response.send_message("先に学年を指定してください。", ephemeral=True)
+        year = self.view.get_item(Year).values
+        testtype = self.view.get_item(TestType).values
+        subject = self.view.get_item(Subject).values
+        if not (year and testtype and subject):
+            return await interaction.response.send_message("すべての項目を先に選択してください。", ephemeral=True)
+
+        await self.view.bot.cogs["Examination"].execute_sql(
+            "INSERT INTO main values (%s, %s, %s, NULL, %s, NULL);",
+            (int(year[0]), int(grade[0]), int(subject[0]), int(testtype[0]))
+        )
+        await interaction.response.edit_message(content="登録しました。", view=None)
 
 
 class Examination(commands.Cog):
@@ -90,6 +142,7 @@ class Examination(commands.Cog):
             user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
             db=os.environ["MYSQL_DBNAME"], loop=self.bot.loop, autocommit=True
         )
+        # memo: データベース `main` の構造 -> (Year, Grade, Subject, Classes, Type, Teacher)
 
     async def execute_sql(
         self, sql: str, _injects: tuple | None = None, _return_type = ""
