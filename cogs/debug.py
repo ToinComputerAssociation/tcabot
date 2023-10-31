@@ -16,7 +16,8 @@ class Debug(commands.Cog):
                 "An error has occurred in command execution.",
                 embed=discord.Embed(description=f"```py\n{''.join(fmt_exc(exc))}\n```")
             )
-        await ctx.send(f"Command was executed successfully.\n```\n{r or '(Nothing Returned)'}\n```")
+        else:
+            await ctx.send(f"Command was executed successfully.\n```\n{r or '(Nothing Returned)'}\n```")
 
 
 async def setup(bot):
