@@ -1,3 +1,4 @@
+from typing import Optional
 from discord.ext import commands
 import discord
 import aiomysql
@@ -5,6 +6,12 @@ import os
 
 
 class DataCreateView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(Grade())
+        self.add_item(TestType())
+        self.add_item(SubmitButton(1))
+
     def get_item(self, cls):
         for i in self.children:
             if isinstance(i, cls):
@@ -32,6 +39,8 @@ class TestType(discord.ui.Select):
 
 
 class Grade(discord.ui.Select):
+    view: DataCreateView
+
     def __init__(self):
         super().__init__(
             placeholder="学年を選択...",
@@ -44,22 +53,21 @@ class Grade(discord.ui.Select):
 
     async def callback(self, interaction):
         selected = int(self.values[0])
-        for i in range(4):
+        for i in range(3):
             self.options[i].default = (i == selected-1)
+        self.view.get_item(SubmitButton).disabled = False
         await interaction.response.edit_message(view=self.view)
 
 
 class SubmitButton(discord.ui.Button):
     def __init__(self, mode: int):
-        super().__init__(label="次へ")
+        super().__init__(label="次へ", disabled=True)
         self.mode = mode
 
     async def callback(self, interaction):
         if self.mode == 1:
             # self.view.add_item()
-            grade = self.view.get_item(Grade)
-            if not grade.values:
-                return await interaction.response.send_message("先に学年を指定してください。", ephemeral=True)
+            grade = self.view.get_item(Grade).values[0]
             await interaction.response.edit_message(content="教科を選択してください。")
         else:
             ...
@@ -91,9 +99,6 @@ class Examination(commands.Cog):
     @commands.hybrid_command(aliases=["re"])
     async def register(self, ctx: commands.Context):
         view = DataCreateView()
-        view.add_item(Grade())
-        view.add_item(TestType())
-        view.add_item(SubmitButton(1))
         await ctx.send("学年とテストの種類を選択してください。", view=view)
 
     @commands.hybrid_command()
