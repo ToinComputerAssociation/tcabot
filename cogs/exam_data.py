@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Literal
 from discord.ext import commands
 import discord
 import aiomysql
@@ -162,7 +162,11 @@ class Examination(commands.Cog):
         await ctx.send("学年とテストの種類を選択してください。", view=view)
 
     @commands.hybrid_command()
-    async def view(self, ctx: commands.Context):
+    async def search(
+        self, ctx: commands.Context,
+        year: Literal[2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015],
+        testtype: Literal["前期中間", "前期期末", "後期中間", "後期期末"]
+    ):
         await ctx.send("test2!")
 
 
