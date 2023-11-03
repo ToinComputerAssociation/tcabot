@@ -164,17 +164,30 @@ class Examination(commands.Cog):
     @commands.hybrid_command()
     async def search(
         self, ctx: commands.Context,
-        year: Literal[2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015],
+        grade: Literal["1年", "2年", "3年"],
         testtype: Literal["前期中間", "前期期末", "後期中間", "後期期末"],
         subject: Literal[
-            "数学I", "数学II", "数学III", "数学A", "数学B", "数学C",
-            "現代の国語", "言語文化", "歴史総合", "地理総合", "生物基礎", "生物",
-            "科学基礎", "科学", "地学基礎", "地学", "物理基礎", "物理",
-            "英語コミュニケーションI", "論理表現I", "英語コミュニケーションII", "論理表現II",
-            "英語コミュニケーションIII", "論理表現III", "情報"
+            "数学I", "数学A", "数学II", "数学B", "数学III", "数学C",
+            "現代の国語", "言語文化", "英語コミュニケーションI", 
+            "英語コミュニケーションII", "英語コミュニケーションIII", "論理表現I", "論理表現II",
+            "論理表現III", "生物基礎", "生物", "物理基礎", "物理", "科学基礎",
+            "科学", "地学基礎", "地学", "歴史総合", "地理総合", "情報"
         ]
     ):
-        await ctx.send("test2!")
+        gra = int(grade[0])
+        testty = ["前期中間", "前期期末", "後期中間", "後期期末"].index(testtype)+1
+        subje = [
+            "数学I", "数学A", "数学II", "数学B", "数学III", "数学C",
+            "現代の国語", "言語文化", "英語コミュニケーションI", 
+            "英語コミュニケーションII", "英語コミュニケーションIII", "論理表現I", "論理表現II",
+            "論理表現III", "生物基礎", "生物", "物理基礎", "物理", "科学基礎",
+            "科学", "地学基礎", "地学", "歴史総合", "地理総合", "情報"
+        ].index(subject)+1
+        ret = await self.execute_sql(
+            "SELECT * FROM main WHERE grade=%s and testtype=%s and subject=%s",
+            (gra, testty, subje)
+        )
+        await ctx.send(ret or "Nothing found.")
 
 
 async def setup(bot: commands.Bot) -> None:
