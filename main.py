@@ -24,5 +24,11 @@ async def on_ready():
     await bot.tree.sync()
     print("Hello, TCABot!")
 
+@bot.tree.error
+async def on_error(interaction, error):
+    await discord.app_commands.CommandTree.on_error(bot.tree, interaction, error)
+    if interaction.response.is_done():
+        await interaction.channel.send("")
+
 
 bot.run(token=os.getenv("TCABOT_TOKEN"))
