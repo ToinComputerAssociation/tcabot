@@ -18,7 +18,7 @@ class MyCog(commands.Cog):
     def cog_unload(self):
         self.create_bacha.cancel()
 
-    @tasks.loop(time=datetime.time(7, 30, 0))
+    @tasks.loop(time=datetime.time(22, 30, 0))
     async def create_bacha(self):
         channel = self.bot.get_channel(1174529316902666341)
         if not isinstance(channel, discord.TextChannel):
