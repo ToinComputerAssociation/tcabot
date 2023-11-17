@@ -20,6 +20,14 @@ class MyCog(commands.Cog):
 
     @tasks.loop(time=datetime.time(22, 30, 0))
     async def create_bacha(self):
+        if datetime.date.today().weekday() == 6:
+            return
+        contest_id = await self.create_contest()
+        if isinstance(contest_id, discord.Message):
+            return
+        await self.bot.get_channel(1174529316902666341).send('今日の朝練: https://kenkoooo.com/atcoder/#/contest/show/' + contest_id)
+
+    async def create_contest(self, start_time: datetime.time = datetime.time(7, 45), title="TCA朝練#{date}"):
         channel = self.bot.get_channel(1174529316902666341)
         if not isinstance(channel, discord.TextChannel):
             return
@@ -43,7 +51,7 @@ class MyCog(commands.Cog):
                 'id': random.choice(kouho),
                 'point': 100, 'order': 0
             })
-        start_dt = datetime.datetime.combine(datetime.date.today(), datetime.time(7, 45))
+        start_dt = datetime.datetime.combine(datetime.date.today(), start_time)
 
         # コンテスト作成
         headers = {
@@ -52,7 +60,7 @@ class MyCog(commands.Cog):
         }
         async with aiohttp.ClientSession(loop=self.bot.loop) as session:
             r = await session.post('https://kenkoooo.com/atcoder/internal-api/contest/create', headers=headers, json={
-                'title': "TCA朝練#"+start_dt.strftime(r"%m/%d"),
+                'title': title.format(date=start_dt.strftime(r"%m/%d")),
                 'memo': "茶x4",
                 'start_epoch_second': int(start_dt.timestamp()),
                 'duration_second': 25*60,
@@ -71,7 +79,7 @@ class MyCog(commands.Cog):
             })
         if r.status != 200:
             return await channel.send('バチャの問題設定に失敗しました。')
-        await channel.send('今日の朝練: https://kenkoooo.com/atcoder/#/contest/show/' + contest_id)
+        return contest_id
 
 
 async def setup(bot):
