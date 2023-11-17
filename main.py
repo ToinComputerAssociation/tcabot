@@ -22,13 +22,17 @@ async def on_ready():
             except Exception as e:
                 print("".join(traceback.format_exception(e)))
     await bot.tree.sync()
-    print("Hello, TCABot!")
+    print("[log] Just ready for TCABot")
 
 @bot.tree.error
 async def on_error(interaction, error):
     await discord.app_commands.CommandTree.on_error(bot.tree, interaction, error)
+    err = "".join(traceback.format_exception(error))
+    embed = discord.Embed(description=f"```py\n{err}\n```"[:4095])
     if interaction.response.is_done():
-        await interaction.channel.send("")
+        await interaction.channel.send("An error has occurred.", embed=embed)
+    else:
+        await interaction.response.send_message("An error has occurred.", embed=embed)
 
 
 bot.run(token=os.getenv("TCABOT_TOKEN"))
