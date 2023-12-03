@@ -13,14 +13,24 @@ class MyCog(commands.Cog):
         if "PROBLEMS_TOKEN" not in os.environ:
             raise ValueError("there is no atcoder_problems token")
         self.token = os.environ["PROBLEMS_TOKEN"]
+        self.tugi_yasumi = False
         self.create_bacha.start()
 
     def cog_unload(self):
         self.create_bacha.cancel()
 
+    @commands.hybrid_command()
+    @commands.is_owner()
+    async def tugi_yasumi(self, ctx):
+        self.tugi_yasumi = True
+        await ctx.send("次回の朝練は休みになりました。")
+
     @tasks.loop(time=datetime.time(22, 30, 0))
     async def create_bacha(self):
         if datetime.date.today().weekday() == 6:
+            return
+        if self.tugi_yasumi:
+            self.tugi_yasumi = False
             return
         contest_id = await self.create_contest()
         if isinstance(contest_id, discord.Message):
