@@ -14,6 +14,7 @@ class MyCog(commands.Cog):
             raise ValueError("there is no atcoder_problems token")
         self.token = os.environ["PROBLEMS_TOKEN"]
         self.tugi_yasumi = False
+        self.onoff = True
         self.create_bacha.start()
 
     def cog_unload(self):
@@ -25,9 +26,17 @@ class MyCog(commands.Cog):
         self.tugi_yasumi = True
         await ctx.send("次回の朝練は休みになりました。")
 
+    @commands.command()
+    @commands.is_owner()
+    async def asaren_onoff(self, ctx):
+        self.onoff = not self.onoff
+        await ctx.send(f"次回以降の朝練が{(self.onoff and 'オン') or 'オフ'}になりました。")
+
     @tasks.loop(time=datetime.time(21, 30, 0))
     async def create_bacha(self):
         if datetime.date.today().weekday() == 6:
+            return
+        if not self.onoff:
             return
         if self.tugi_yasumi:
             self.tugi_yasumi = False
