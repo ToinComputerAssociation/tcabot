@@ -90,6 +90,7 @@ class Year(discord.ui.Select):
         super().__init__(
             placeholder="年を選択...",
             options=[
+                discord.SelectOption(label="2024年", value="2024"),
                 discord.SelectOption(label="2023年", value="2023"),
                 discord.SelectOption(label="2022年", value="2022"),
                 discord.SelectOption(label="2021年", value="2021"),
@@ -137,11 +138,11 @@ class Examination(commands.Cog):
         self.bot = bot
 
     async def cog_load(self):
-        self.pool = await aiomysql.create_pool(
-            host=os.environ["MYSQL_HOST"], port=int(os.environ["MYSQL_PORT"]),
-            user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
-            db=os.environ["MYSQL_DBNAME"], loop=self.bot.loop, autocommit=True
-        )
+        self.pool = None #await aiomysql.create_pool(
+        #    host=os.environ["MYSQL_HOST"], port=int(os.environ["MYSQL_PORT"]),
+        #    user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
+        #    db=os.environ["MYSQL_DBNAME"], loop=self.bot.loop, autocommit=True
+        #)
         # memo: データベース `main` の構造 -> (Year, Grade, Subject, Classes, Type, Teacher)
 
     async def execute_sql(
