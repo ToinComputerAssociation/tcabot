@@ -4,7 +4,7 @@ from discord.ext import commands
 import aiohttp
 
 
-class Work(commands.Cog):
+class Genshin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -23,4 +23,4 @@ class Work(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(Work(bot))
+    await bot.add_cog(Genshin(bot))
