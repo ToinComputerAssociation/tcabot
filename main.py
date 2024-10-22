@@ -14,6 +14,7 @@ bot = commands.Bot(intents=discord.Intents.all(), command_prefix="tca!")
 
 @bot.event
 async def on_ready():
+    bot.owner_ids = [693025129806037003, 850297484965576754]
     await bot.load_extension("jishaku")
     for name in os.listdir("./cogs"):
         if not name.startswith((".", "_")):
