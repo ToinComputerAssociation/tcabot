@@ -23,11 +23,11 @@ class Debug(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def pullre(self, ctx: commands.Context, cog_name: str | None = None):
-        git = await self.bot.get_command("jishaku git")
+        git = self.bot.get_command("jishaku git")
         await ctx.invoke(git, "pull")
         if cog_name is None:
             cog_name = "cogs.*"
-        reload = await self.bot.get_command("jishaku reload")
+        reload = self.bot.get_command("jishaku reload")
         await ctx.invoke(reload, cog_name)
 
 
