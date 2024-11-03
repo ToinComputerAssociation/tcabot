@@ -27,6 +27,13 @@ class Work(commands.Cog):
         new = await ctx.guild.create_custom_emoji(name="syafu", image=data, reason="社不コマンド")
         await ctx.send(f"<:syafu:{new.id}>")
 
+    @commands.command()
+    @commands.is_owner()
+    async def add_syateki(self, ctx: commands.Context):
+        emoji = self.bot.get_guild(1107217216203665420).get_emoji(1298439548879241276)
+        data = await emoji.read()
+        new = await ctx.guild.create_custom_emoji(name="syateki", image=data, reason="社適コマンド")
+        await ctx.send(f"<:syateki:{new.id}>")
 
 async def setup(bot):
     await bot.add_cog(Work(bot))
