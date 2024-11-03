@@ -19,6 +19,14 @@ class Work(commands.Cog):
             date=datetime.date.today().isoformat(), now=time.strftime("%H:%M")
         ))  # urlの送信
 
+    @commands.command()
+    @commands.is_owner()
+    async def add_syafu(self, ctx: commands.Context):
+        emoji = self.bot.get_guild(1107217216203665420).get_emoji(1266237861905305732)
+        data = await emoji.read()
+        new = await ctx.guild.create_custom_emoji(name="syafu", image=data, reason="社不コマンド")
+        await ctx.send(f"<:syafu:{new.id}>")
+
 
 async def setup(bot):
     await bot.add_cog(Work(bot))

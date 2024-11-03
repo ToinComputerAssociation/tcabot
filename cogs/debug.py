@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from traceback import format_exception as fmt_exc
 from jishaku.codeblocks import Codeblock
+from jishaku.modules import ExtensionConverter
 
 
 class Debug(commands.Cog):
@@ -23,12 +24,12 @@ class Debug(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def pullre(self, ctx: commands.Context, cog_name: str | None = None):
-        git = self.bot.get_command("jishaku git")
-        await ctx.invoke(git, "pull")
+        await self.bot.get_command("jishaku git")(ctx, argument=Codeblock(None, "pull"))
         if cog_name is None:
             cog_name = "cogs.*"
+        reload_cogs = await ExtensionConverter().convert(ctx, cog_name)
         reload = self.bot.get_command("jishaku reload")
-        await ctx.invoke(reload, cog_name)
+        await ctx.invoke(reload, reload_cogs)
 
 
 async def setup(bot):
