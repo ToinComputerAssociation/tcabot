@@ -4,6 +4,10 @@ import random
 import datetime
 import discord
 from discord.ext import commands, tasks
+import ssl
+import certifi
+
+sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 
 class MyCog(commands.Cog):
@@ -54,7 +58,7 @@ class MyCog(commands.Cog):
         if not isinstance(channel, discord.TextChannel):
             return
         async with aiohttp.ClientSession(loop=self.bot.loop) as session:
-            problem_json = await (await session.get("https://kenkoooo.com/atcoder/resources/problem-models.json")).json()
+            problem_json = await (await session.get("https://kenkoooo.com/atcoder/resources/problem-models.json", ssl=sslcontext)).json()
 
         # 問題の選定
         kouho = []
@@ -104,7 +108,7 @@ class MyCog(commands.Cog):
                 'mode': None,
                 'is_public': True,
                 'penalty_second': 300,
-            })
+            }, ssl=sslcontext)
         if r.status != 200:
             return await channel.send("バチャの作成に失敗しました。")
         contest_id = (await r.json())['contest_id']
@@ -113,7 +117,7 @@ class MyCog(commands.Cog):
             r = await session.post('https://kenkoooo.com/atcoder/internal-api/contest/item/update', headers=headers, json={
                 'contest_id': contest_id,
                 'problems': problems
-            })
+            }, ssl=sslcontext)
         if r.status != 200:
             return await channel.send('バチャの問題設定に失敗しました。')
         return contest_id
