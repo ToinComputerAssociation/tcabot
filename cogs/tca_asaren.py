@@ -84,10 +84,10 @@ class MyCog(commands.Cog):
         for _ in range(2):
             k = random.choice(kouho_green)
             kouho_green.remove(k)
-            problems.append({'id': k, 'point': 200, 'order': 0})
+            problems.append({'id': k, 'point': 200, 'order': 1})
         problems.append({
             'id': random.choice(kouho_blue),
-            'point': 400, 'order': 0
+            'point': 400, 'order': 2
         })
         start_dt = datetime.datetime.combine(datetime.date.today(), start_time)
 
@@ -102,7 +102,7 @@ class MyCog(commands.Cog):
         async with aiohttp.ClientSession(loop=self.bot.loop) as session:
             r = await session.post('https://kenkoooo.com/atcoder/internal-api/contest/create', headers=headers, json={
                 'title': title.format(date=start_dt.strftime(r"%m/%d")),
-                'memo': "茶x4",
+                'memo': "茶x4、緑×2、青×1",
                 'start_epoch_second': int(start_dt.timestamp()),
                 'duration_second': minutes*60,
                 'mode': None,
