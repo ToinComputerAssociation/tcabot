@@ -138,11 +138,11 @@ class Examination(commands.Cog):
         self.bot = bot
 
     async def cog_load(self):
-        self.pool = None #await aiomysql.create_pool(
-        #    host=os.environ["MYSQL_HOST"], port=int(os.environ["MYSQL_PORT"]),
-        #    user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
-        #    db=os.environ["MYSQL_DBNAME"], loop=self.bot.loop, autocommit=True
-        #)
+        self.pool = await aiomysql.create_pool(
+           host=os.environ["MYSQL_HOST"], port=int(os.environ["MYSQL_PORT"]),
+           user=os.environ["MYSQL_USERNAME"], password=os.environ["MYSQL_PASSWORD"],
+           db=os.environ["MYSQL_DBNAME"], loop=self.bot.loop, autocommit=True
+        )
         # memo: データベース `main` の構造 -> (Year, Grade, Subject, Classes, Type, Teacher)
 
     async def execute_sql(

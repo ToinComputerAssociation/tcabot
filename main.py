@@ -17,11 +17,12 @@ async def on_ready():
     bot.owner_ids = [693025129806037003, 850297484965576754]
     await bot.load_extension("jishaku")
     for name in os.listdir("./cogs"):
-        if not name.startswith((".", "_")):
+        if not (name.startswith((".", "_")) or name == "money.py"):
             try:
                 await bot.load_extension("cogs."+name.replace(".py", ""))
             except Exception as e:
                 print("".join(traceback.format_exception(e)))
+    await bot.load_extension("cogs.money")
     await bot.tree.sync()
     print("[log] Just ready for TCABot")
 
