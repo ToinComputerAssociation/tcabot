@@ -63,6 +63,12 @@ class Money(commands.Cog):
             (user_id, payment_type, amount, amount)
         )
 
+    async def get_money(self, user_id, payment_type):
+        data = await self.execute_sql(
+            "SELECT * FROM money WHERE user_id = %s AND payment_type = %s;", (user_id, payment_type)
+        )
+        return data[0][2]
+
     @commands.hybrid_group(fallback="status", description="所持金の情報を確認します。")
     @app_commands.allowed_installs(guilds=True, users=True)
     async def money(self, ctx: commands.Context):
@@ -136,11 +142,9 @@ class Money(commands.Cog):
 
         async def button_callback(interaction: discord.Interaction, button: discord.ui.Button):
             await self.pay_or_charge(ctx.author.id, button.label, -amount, reason, settings["logger"])
-            left = await self.execute_sql(
-                "SELECT * FROM money WHERE user_id = %s AND payment_type = %s;", (ctx.author.id, button.label)
-            )
+            left = await self.get_money(ctx.author.id, button.label)
             await interaction.response.edit_message(
-                content=f"支払いを記録しました。\n> `{button.label}`に`{amount}`円支払い\n> 残額：`{left[0][2]}`円",
+                content=f"支払いを記録しました。\n> `{button.label}`で`{amount}`円支払い\n> 残額：`{left}`円",
                 view=None
             )
 
@@ -162,8 +166,9 @@ class Money(commands.Cog):
 
         async def button_callback(interaction: discord.Interaction, button: discord.ui.Button):
             await self.pay_or_charge(ctx.author.id, button.label, amount, reason, settings["logger"])
+            left = await self.get_money(ctx.author.id, button.label)
             await interaction.response.edit_message(
-                content=f"チャージを記録しました。\n> `{button.label}`に`{amount}`円",
+                content=f"チャージを記録しました。\n> `{button.label}`に`{amount}`円\n> 残額：`{left}`円",
                 view=None
             )
 
