@@ -17,7 +17,7 @@ class MyCog(commands.Cog):
         if "PROBLEMS_TOKEN" not in os.environ:
             raise ValueError("there is no atcoder_problems token")
         self.token = os.environ["PROBLEMS_TOKEN"]
-        self.tugi_yasumi = False
+        self._tugi_yasumi = False
         self.onoff = True
         self.create_bacha.start()
 
@@ -27,7 +27,7 @@ class MyCog(commands.Cog):
     @commands.hybrid_command()
     @commands.is_owner()
     async def tugi_yasumi(self, ctx):
-        self.tugi_yasumi = True
+        self._tugi_yasumi = True
         await ctx.send("次回の朝練は休みになりました。")
 
     @commands.command()
@@ -42,8 +42,8 @@ class MyCog(commands.Cog):
             return
         if not self.onoff:
             return
-        if self.tugi_yasumi:
-            self.tugi_yasumi = False
+        if self._tugi_yasumi:
+            self._tugi_yasumi = False
             return
         contest_id = await self.create_contest()
         if isinstance(contest_id, discord.Message):
@@ -65,10 +65,10 @@ class MyCog(commands.Cog):
         kouho_green = []  # 緑diff*2
         kouho_blue = []  # 青diff*1
         for problem_id in problem_json.keys():
-            if "abc" not in problem_id or 'difficulty' not in problem_json[problem_id]:
-                continue
+            if "abc" not in problem_id or not problem_json[problem_id].get('difficulty'):
+                continue  # ABC以外、もしくはdiffがない
             if problem_json[problem_id]['is_experimental']:
-                continue  # 試験管は除く。
+                continue  # 試験管
             if 400 <= problem_json[problem_id]["difficulty"] < 800:
                 kouho.append(problem_id)
             elif 800 <= problem_json[problem_id]["difficulty"] < 1200:
@@ -110,7 +110,7 @@ class MyCog(commands.Cog):
                 'penalty_second': 300,
             }, ssl=sslcontext)
         if r.status != 200:
-            return await channel.send("バチャの作成に失敗しました。")
+            return await channel.send("バチャの作成に失敗しました。理由：\n" + str(await r.json()))
         contest_id = (await r.json())['contest_id']
 
         async with aiohttp.ClientSession(loop=self.bot.loop) as session:
@@ -119,7 +119,7 @@ class MyCog(commands.Cog):
                 'problems': problems
             }, ssl=sslcontext)
         if r.status != 200:
-            return await channel.send('バチャの問題設定に失敗しました。')
+            return await channel.send('バチャの問題設定に失敗しました。理由：\n' + str(await r.json()))
         return contest_id
 
 
