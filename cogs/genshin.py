@@ -19,7 +19,6 @@ class Genshin(commands.Cog):
         data = await self.get_data(uid)
         fp = io.StringIO(str(data))
         await ctx.reply(file=discord.File(fp))
-        
 
 
 async def setup(bot):

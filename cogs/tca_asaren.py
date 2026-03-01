@@ -46,7 +46,7 @@ class MyCog(commands.Cog):
             self._tugi_yasumi = False
             return
         contest_id = await self.create_contest()
-        if isinstance(contest_id, discord.Message):
+        if not isinstance(contest_id, str):
             return
         await self.bot.get_channel(1174529316902666341).send('今日の朝練: https://kenkoooo.com/atcoder/#/contest/show/' + contest_id)
 
