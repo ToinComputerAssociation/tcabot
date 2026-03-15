@@ -48,7 +48,8 @@ class MyCog(commands.Cog):
         contest_id = await self.create_contest()
         if not isinstance(contest_id, str):
             return
-        await self.bot.get_channel(1174529316902666341).send('今日の朝練: https://kenkoooo.com/atcoder/#/contest/show/' + contest_id)
+        msg = await self.bot.get_channel(1174529316902666341).send('今日の朝練: https://kenkoooo.com/atcoder/#/contest/show/' + contest_id)
+        await msg.publish()
 
     async def create_contest(
         self, start_time: datetime.time = datetime.time(7, 0),
